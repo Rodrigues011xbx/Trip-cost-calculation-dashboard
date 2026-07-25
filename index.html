@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reembolso de Viagens — Igreja Maceió</title>
+  <meta name="description" content="Sistema de controle de reembolso de viagens por quilometragem da Igreja de Maceió — Ministério Extralocal." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="shortcut icon" href="./img/map.png" type="image/x-icon">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fa-solid fa-church"></i></div>
+      <div class="logo-text">
+        <span class="logo-title">Igreja Maceió</span>
+        <span class="logo-sub">Min. Extralocal</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-tab="dashboard" id="nav-dashboard">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span class="nav-label">Dashboard</span>
+      </button>
+      <button class="nav-item" data-tab="viagens" id="nav-viagens">
+        <i class="fa-solid fa-route"></i>
+        <span class="nav-label">Registrar Viagem</span>
+      </button>
+      <button class="nav-item" data-tab="relatorio" id="nav-relatorio">
+        <i class="fa-solid fa-file-invoice-dollar"></i>
+        <span class="nav-label">Relatório</span>
+      </button>
+      <button class="nav-item" data-tab="configuracoes" id="nav-configuracoes">
+        <i class="fa-solid fa-sliders"></i>
+        <span class="nav-label">Configurações</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <span class="nav-label">v1.0 · 2026</span>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main-content" id="main-content">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="sidebar-toggle" id="sidebar-toggle" title="Recolher menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <h1 class="page-title" id="page-title">Dashboard</h1>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-date" id="topbar-date"></div>
+        <div class="topbar-badge"><i class="fa-solid fa-church"></i> Igreja Maceió</div>
+      </div>
+    </header>
+
+    <!-- ========== TAB: DASHBOARD ========== -->
+    <section class="tab-content active" id="tab-dashboard">
+
+      <div class="stats-grid">
+        <div class="stat-card card-blue">
+          <div class="stat-icon"><i class="fa-solid fa-route"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Total de Viagens</span>
+            <span class="stat-value" id="dash-total-viagens">0</span>
+            <span class="stat-sub">registradas</span>
+          </div>
+        </div>
+        <div class="stat-card card-purple">
+          <div class="stat-icon"><i class="fa-solid fa-road"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">KM Rodado</span>
+            <span class="stat-value" id="dash-total-km">0</span>
+            <span class="stat-sub">quilômetros</span>
+          </div>
+        </div>
+        <div class="stat-card card-green">
+          <div class="stat-icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Total a Reembolsar</span>
+            <span class="stat-value" id="dash-total-reembolso">R$ 0</span>
+            <span class="stat-sub">a pagar</span>
+          </div>
+        </div>
+        <div class="stat-card card-orange">
+          <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Condutores</span>
+            <span class="stat-value" id="dash-condutores">0</span>
+            <span class="stat-sub">ativos</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHARTS ROW -->
+      <div class="charts-row">
+        <div class="card chart-card">
+          <div class="card-header">
+            <h2 class="card-title"><i class="fa-solid fa-chart-column"></i> Reembolso por Condutor</h2>
+          </div>
+          <div class="card-body chart-body">
+            <canvas id="chart-condutores"></canvas>
+            <div class="chart-empty" id="chart-condutores-empty">
+              <i class="fa-solid fa-chart-column"></i>
+              <p>Nenhuma viagem ainda</p>
+            </div>
+          </div>
+        </div>
+        <div class="card chart-card">
+          <div class="card-header">
+            <h2 class="card-title"><i class="fa-solid fa-chart-line"></i> KM por Mês</h2>
+          </div>
+          <div class="card-body chart-body">
+            <canvas id="chart-mensal"></canvas>
+            <div class="chart-empty" id="chart-mensal-empty">
+              <i class="fa-solid fa-chart-line"></i>
+              <p>Nenhuma viagem ainda</p>
+            </div>
+          </div>
+        </div>
+        <div class="card chart-card chart-card-sm">
+          <div class="card-header">
+            <h2 class="card-title"><i class="fa-solid fa-chart-pie"></i> Viagens por Condutor</h2>
+          </div>
+          <div class="card-body chart-body">
+            <canvas id="chart-pizza"></canvas>
+            <div class="chart-empty" id="chart-pizza-empty">
+              <i class="fa-solid fa-chart-pie"></i>
+              <p>Nenhuma viagem ainda</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM ROW -->
+      <div class="dashboard-body">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title"><i class="fa-solid fa-ranking-star"></i> Ranking de Condutores</h2>
+          </div>
+          <div class="card-body no-pad">
+            <table class="data-table" id="dash-tabela-condutores">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Condutor</th>
+                  <th>Viagens</th>
+                  <th>KM Total</th>
+                  <th>Reembolso</th>
+                </tr>
+              </thead>
+              <tbody id="dash-condutores-body">
+                <tr class="empty-row"><td colspan="5">Nenhuma viagem registrada.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> Últimas Viagens</h2>
+          </div>
+          <div class="card-body no-pad">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Condutor</th>
+                  <th>Trecho</th>
+                  <th>KM</th>
+                  <th>Reembolso</th>
+                </tr>
+              </thead>
+              <tbody id="dash-viagens-body">
+                <tr class="empty-row"><td colspan="5">Nenhuma viagem registrada.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== TAB: REGISTRAR VIAGEM ========== -->
+    <section class="tab-content" id="tab-viagens">
+      <div class="two-col-layout">
+        <div class="card form-card">
+          <div class="card-header">
+            <h2 class="card-title"><i class="fa-solid fa-plus-circle"></i> <span id="form-title-label">Nova Viagem</span></h2>
+          </div>
+          <div class="card-body">
+            <form id="form-viagem" novalidate>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="v-condutor"><i class="fa-solid fa-user"></i> Condutor *</label>
+                  <div class="select-wrapper">
+                    <select id="v-condutor" required>
+                      <option value="">Selecione...</option>
+                    </select>
+                    <i class="fa-solid fa-chevron-down select-icon"></i>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="v-data"><i class="fa-solid fa-calendar"></i> Data da Viagem *</label>
+                  <input type="date" id="v-data" required />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="v-origem"><i class="fa-solid fa-location-dot"></i> Origem *</label>
+                  <input type="text" id="v-origem" placeholder="Ex: Maceió" required />
+                </div>
+                <div class="form-group">
+                  <label for="v-destino"><i class="fa-solid fa-flag-checkered"></i> Destino *</label>
+                  <input type="text" id="v-destino" placeholder="Ex: Arapiraca" required />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="v-km-inicial"><i class="fa-solid fa-gauge"></i> KM Inicial *</label>
+                  <input type="number" id="v-km-inicial" placeholder="0" min="0" step="0.1" required />
+                </div>
+                <div class="form-group">
+                  <label for="v-km-final"><i class="fa-solid fa-gauge-high"></i> KM Final *</label>
+                  <input type="number" id="v-km-final" placeholder="0" min="0" step="0.1" required />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="v-motivo"><i class="fa-solid fa-note-sticky"></i> Motivo / Descrição *</label>
+                <textarea id="v-motivo" rows="3" placeholder="Ex: Apoio à congregação de Arapiraca — culto de domingo" required></textarea>
+              </div>
+
+              <div class="calc-preview" id="calc-preview">
+                <div class="calc-preview-header">
+                  <i class="fa-solid fa-calculator"></i>
+                  <span>Pré-visualização do Reembolso</span>
+                </div>
+                <div class="calc-preview-body">
+                  <div class="calc-row"><span>Distância percorrida</span><strong id="prev-km">— km</strong></div>
+                  <div class="calc-row"><span>Custo por km</span><strong id="prev-custo-km">R$ —</strong></div>
+                  <div class="calc-divider"></div>
+                  <div class="calc-row total"><span>Reembolso estimado</span><strong id="prev-total">R$ —</strong></div>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="button" class="btn btn-ghost" id="btn-limpar-viagem">
+                  <i class="fa-solid fa-broom"></i> Limpar
+                </button>
+                <button type="submit" class="btn btn-primary" id="btn-salvar-viagem">
+                  <i class="fa-solid fa-floppy-disk"></i> Salvar Viagem
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="card list-card">
+          <div class="card-header">
+            <h2 class="card-title"><i class="fa-solid fa-list-check"></i> Viagens Registradas</h2>
+            <div class="card-header-actions">
+              <div class="select-wrapper small">
+                <select id="filtro-condutor-lista">
+                  <option value="">Todos</option>
+                </select>
+                <i class="fa-solid fa-chevron-down select-icon"></i>
+              </div>
+            </div>
+          </div>
+          <div class="card-body no-pad">
+            <div class="viagens-list" id="viagens-list">
+              <div class="empty-state">
+                <i class="fa-solid fa-route"></i>
+                <p>Nenhuma viagem registrada</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== TAB: RELATÓRIO ========== -->
+    <section class="tab-content" id="tab-relatorio">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title"><i class="fa-solid fa-file-invoice-dollar"></i> Relatório de Reembolso</h2>
+          <div class="card-header-actions">
+            <div class="filter-row">
+              <div class="select-wrapper small">
+                <select id="rel-condutor"><option value="">Todos os condutores</option></select>
+                <i class="fa-solid fa-chevron-down select-icon"></i>
+              </div>
+              <div class="select-wrapper small">
+                <select id="rel-mes">
+                  <option value="">Todos os meses</option>
+                  <option value="1">Janeiro</option><option value="2">Fevereiro</option>
+                  <option value="3">Março</option><option value="4">Abril</option>
+                  <option value="5">Maio</option><option value="6">Junho</option>
+                  <option value="7">Julho</option><option value="8">Agosto</option>
+                  <option value="9">Setembro</option><option value="10">Outubro</option>
+                  <option value="11">Novembro</option><option value="12">Dezembro</option>
+                </select>
+                <i class="fa-solid fa-chevron-down select-icon"></i>
+              </div>
+              <div class="select-wrapper small">
+                <select id="rel-ano"><option value="">Todos os anos</option></select>
+                <i class="fa-solid fa-chevron-down select-icon"></i>
+              </div>
+              <button class="btn btn-primary btn-sm" id="btn-imprimir">
+                <i class="fa-solid fa-print"></i> Imprimir
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body" id="relatorio-body">
+          <div class="empty-state">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+            <p>Nenhuma viagem encontrada para os filtros selecionados.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== TAB: CONFIGURAÇÕES ========== -->
+    <section class="tab-content" id="tab-configuracoes">
+      <div class="two-col-layout">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title"><i class="fa-solid fa-gas-pump"></i> Custo por Quilômetro</h2>
+          </div>
+          <div class="card-body">
+            <p class="config-desc">Valores técnicos baseados em especialistas em gestão de frotas. Altere conforme necessário.</p>
+
+            <div class="cost-item">
+              <div class="cost-item-header">
+                <div class="cost-item-icon icon-blue"><i class="fa-solid fa-gas-pump"></i></div>
+                <div class="cost-item-info">
+                  <span class="cost-item-title">Combustível</span>
+                  <span class="cost-item-desc">Preço do litro ÷ consumo médio (km/l)</span>
+                </div>
+              </div>
+              <div class="cost-item-inputs">
+                <div class="form-group">
+                  <label>Preço do litro (R$)</label>
+                  <input type="number" id="cfg-preco-combustivel" step="0.01" min="0" value="6.70" />
+                </div>
+                <div class="form-group">
+                  <label>Consumo médio (km/l)</label>
+                  <input type="number" id="cfg-consumo" step="0.1" min="1" value="10" />
+                </div>
+                <div class="form-group">
+                  <label>Custo / km</label>
+                  <div class="result-badge" id="res-combustivel">R$ 0,67</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="cost-item">
+              <div class="cost-item-header">
+                <div class="cost-item-icon icon-amber"><i class="fa-solid fa-oil-can"></i></div>
+                <div class="cost-item-info">
+                  <span class="cost-item-title">Troca de Óleo</span>
+                  <span class="cost-item-desc">Custo total ÷ intervalo (km)</span>
+                </div>
+              </div>
+              <div class="cost-item-inputs">
+                <div class="form-group">
+                  <label>Custo da troca (R$)</label>
+                  <input type="number" id="cfg-oleo-custo" step="0.01" min="0" value="350" />
+                </div>
+                <div class="form-group">
+                  <label>Intervalo (km)</label>
+                  <input type="number" id="cfg-oleo-intervalo" step="100" min="1000" value="10000" />
+                </div>
+                <div class="form-group">
+                  <label>Custo / km</label>
+                  <div class="result-badge" id="res-oleo">R$ 0,04</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="cost-item">
+              <div class="cost-item-header">
+                <div class="cost-item-icon icon-purple"><i class="fa-solid fa-circle-dot"></i></div>
+                <div class="cost-item-info">
+                  <span class="cost-item-title">Pneus</span>
+                  <span class="cost-item-desc">Custo do jogo ÷ vida útil (km)</span>
+                </div>
+              </div>
+              <div class="cost-item-inputs">
+                <div class="form-group">
+                  <label>Custo do jogo (R$)</label>
+                  <input type="number" id="cfg-pneus-custo" step="0.01" min="0" value="1600" />
+                </div>
+                <div class="form-group">
+                  <label>Vida útil (km)</label>
+                  <input type="number" id="cfg-pneus-vida" step="1000" min="5000" value="40000" />
+                </div>
+                <div class="form-group">
+                  <label>Custo / km</label>
+                  <div class="result-badge" id="res-pneus">R$ 0,04</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="cost-item">
+              <div class="cost-item-header">
+                <div class="cost-item-icon icon-green"><i class="fa-solid fa-wrench"></i></div>
+                <div class="cost-item-info">
+                  <span class="cost-item-title">Manutenção Geral</span>
+                  <span class="cost-item-desc">Freios, suspensão, amortecedores, etc.</span>
+                </div>
+              </div>
+              <div class="cost-item-inputs single">
+                <div class="form-group">
+                  <label>Custo / km (R$)</label>
+                  <input type="number" id="cfg-manutencao" step="0.01" min="0" value="0.10" />
+                </div>
+                <div class="form-group">
+                  <label>Custo / km</label>
+                  <div class="result-badge" id="res-manutencao">R$ 0,10</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="cost-item">
+              <div class="cost-item-header">
+                <div class="cost-item-icon icon-cyan"><i class="fa-solid fa-spray-can-sparkles"></i></div>
+                <div class="cost-item-info">
+                  <span class="cost-item-title">Lavagem</span>
+                  <span class="cost-item-desc">Custo por lavagem ÷ frequência (km)</span>
+                </div>
+              </div>
+              <div class="cost-item-inputs">
+                <div class="form-group">
+                  <label>Custo por lavagem (R$)</label>
+                  <input type="number" id="cfg-lavagem-custo" step="0.01" min="0" value="50" />
+                </div>
+                <div class="form-group">
+                  <label>Frequência (km)</label>
+                  <input type="number" id="cfg-lavagem-intervalo" step="100" min="100" value="1000" />
+                </div>
+                <div class="form-group">
+                  <label>Custo / km</label>
+                  <div class="result-badge" id="res-lavagem">R$ 0,05</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="cost-total-bar">
+              <div class="cost-total-label">
+                <i class="fa-solid fa-sigma"></i>
+                <span>Custo total por km</span>
+              </div>
+              <div class="cost-total-value" id="cfg-total-km">R$ 0,90 / km</div>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn btn-ghost" id="btn-restaurar-config">
+                <i class="fa-solid fa-rotate-left"></i> Restaurar Padrões
+              </button>
+              <button class="btn btn-primary" id="btn-salvar-config">
+                <i class="fa-solid fa-floppy-disk"></i> Salvar Configurações
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title"><i class="fa-solid fa-users-gear"></i> Gerenciar Condutores</h2>
+          </div>
+          <div class="card-body">
+            <p class="config-desc">Adicione ou remova os condutores que podem registrar viagens.</p>
+            <div class="form-row">
+              <div class="form-group" style="flex:1">
+                <label for="novo-condutor">Nome do Condutor</label>
+                <input type="text" id="novo-condutor" placeholder="Ex: Vinícius" />
+              </div>
+              <div class="form-group" style="align-self:flex-end">
+                <button class="btn btn-primary" id="btn-add-condutor">
+                  <i class="fa-solid fa-plus"></i> Adicionar
+                </button>
+              </div>
+            </div>
+            <div class="condutores-list" id="condutores-list"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <h3 class="modal-title">Confirmar exclusão</h3>
+      <p class="modal-desc" id="modal-desc">Deseja realmente excluir esta viagem?</p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="modal-cancel">Cancelar</button>
+        <button class="btn btn-danger" id="modal-confirm">Excluir</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
