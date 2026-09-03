@@ -4,6 +4,7 @@
 
 // ─── STATE ────────────────────────────────────────────
 const STATE_KEY = 'igrejaMaceio_reembolso_v2';
+const THEME_KEY = 'igrejaMaceio_theme';
 let state = {
   config: { precoCombustivel:6.70, consumoKml:10, oleoCusto:350, oleoIntervalo:10000, pneusCusto:1600, pneusVida:40000, manutencao:0.10, lavagemCusto:50, lavagemIntervalo:1000 },
   condutores: ['Vinícius', 'Henrique'],
@@ -12,6 +13,24 @@ let state = {
 
 function loadState() { try { const r = localStorage.getItem(STATE_KEY); if (r) state = JSON.parse(r); } catch(_){} }
 function saveState() { localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
+
+function applyTheme(theme) {
+  const isDark = theme === 'dark';
+  document.documentElement.classList.toggle('dark', isDark);
+  const toggle = document.getElementById('theme-toggle');
+  if (!toggle) return;
+  toggle.setAttribute('aria-pressed', String(isDark));
+  toggle.setAttribute('aria-label', isDark ? 'Ativar modo claro' : 'Ativar modo escuro');
+  toggle.title = isDark ? 'Ativar modo claro' : 'Ativar modo escuro';
+  toggle.innerHTML = `<i class="fa-solid ${isDark ? 'fa-sun' : 'fa-moon'}"></i>`;
+}
+
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  const nextTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+  localStorage.setItem(THEME_KEY, nextTheme);
+  applyTheme(nextTheme);
+  renderDashboard();
+});
 
 // ─── CUSTO/KM ─────────────────────────────────────────
 function calcCustoKm(cfg = state.config) {
@@ -270,6 +289,9 @@ function destroyCharts() {
 
 function renderCharts(viagens) {
   destroyCharts();
+  const chartText = getComputedStyle(document.documentElement).getPropertyValue('--text2').trim();
+  const chartGrid = getComputedStyle(document.documentElement).getPropertyValue('--chart-grid').trim();
+  const chartBorder = getComputedStyle(document.documentElement).getPropertyValue('--chart-border').trim();
 
   // por condutor
   const porCondutor = {};
@@ -289,7 +311,7 @@ function renderCharts(viagens) {
       options: {
         responsive: true, maintainAspectRatio: false,
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => fmtBRL(ctx.raw) } } },
-        scales: { y: { ticks: { callback: v => 'R$ '+v.toLocaleString('pt-BR') }, grid: { color: '#e2e8f0' } }, x: { grid: { display: false } } }
+        scales: { y: { ticks: { color: chartText, callback: v => 'R$ '+v.toLocaleString('pt-BR') }, grid: { color: chartGrid } }, x: { ticks: { color: chartText }, grid: { display: false } } }
       }
     });
   }
@@ -314,7 +336,7 @@ function renderCharts(viagens) {
       options: {
         responsive: true, maintainAspectRatio: false,
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.raw.toLocaleString('pt-BR') + ' km' } } },
-        scales: { y: { ticks: { callback: v => v+' km' }, grid: { color: '#e2e8f0' } }, x: { grid: { display: false } } }
+        scales: { y: { ticks: { color: chartText, callback: v => v+' km' }, grid: { color: chartGrid } }, x: { ticks: { color: chartText }, grid: { display: false } } }
       }
     });
   }
@@ -327,11 +349,11 @@ function renderCharts(viagens) {
       type: 'doughnut',
       data: {
         labels: condNomes,
-        datasets: [{ data: condNomes.map(n => porCondutor[n].viagens), backgroundColor: CORES.slice(0,condNomes.length), borderWidth: 2, borderColor: '#fff' }]
+        datasets: [{ data: condNomes.map(n => porCondutor[n].viagens), backgroundColor: CORES.slice(0,condNomes.length), borderWidth: 2, borderColor: chartBorder }]
       },
       options: {
         responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom', labels: { font: { size: 12, family: 'Inter' }, padding: 12 } } }
+        plugins: { legend: { position: 'bottom', labels: { color: chartText, font: { size: 12, family: 'Inter' }, padding: 12 } } }
       }
     });
   }
@@ -419,7 +441,7 @@ function refreshAnosFiltro() {
 
 // ─── INIT ─────────────────────────────────────────────
 function init() {
-  loadState(); updateDate(); loadConfigInputs(); updateConfigPreview();
+  loadState(); applyTheme(localStorage.getItem(THEME_KEY) || 'light'); updateDate(); loadConfigInputs(); updateConfigPreview();
   refreshCondutorSelects(); renderCondutoresList(); renderViagensList();
   renderDashboard(); refreshAnosFiltro();
   document.getElementById('v-data').value = new Date().toISOString().split('T')[0];

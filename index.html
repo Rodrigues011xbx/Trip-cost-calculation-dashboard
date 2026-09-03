@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="shortcut icon" href="./img/map.png" type="image/x-icon">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script>document.documentElement.classList.toggle('dark', localStorage.getItem('igrejaMaceio_theme') === 'dark');</script>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -62,6 +63,9 @@
       </div>
       <div class="topbar-right">
         <div class="topbar-date" id="topbar-date"></div>
+        <button class="theme-toggle" id="theme-toggle" type="button" title="Ativar modo escuro" aria-label="Ativar modo escuro" aria-pressed="false">
+          <i class="fa-solid fa-moon"></i>
+        </button>
         <div class="topbar-badge"><i class="fa-solid fa-church"></i> Igreja Maceió</div>
       </div>
     </header>
