@@ -39,6 +39,7 @@ O cálculo do valor de reembolso é baseado em critérios técnicos utilizados p
 - Cálculo automático do custo total ao alterar qualquer valor
 - Gerenciamento de condutores (adicionar / remover)
 - Botão para restaurar os valores padrão
+- Exportação e importação de backup em JSON para transferir dados entre dispositivos
 
 ---
 
@@ -78,7 +79,7 @@ custo-viagem/
 2. **Não precisa de servidor**, instalação ou internet — funciona 100% offline
 3. Os dados são salvos automaticamente no **localStorage** do navegador
 
-> ⚠️ Os dados ficam armazenados no navegador do computador utilizado. Limpar os dados do navegador irá apagar os registros.
+> ⚠️ Os dados ficam armazenados no navegador do computador utilizado. Para levar os registros a outro dispositivo, use **Configurações → Backup dos dados → Exportar backup** e depois importe o arquivo no outro dispositivo. Limpar os dados do navegador irá apagar os registros locais.
 
 ---
 
