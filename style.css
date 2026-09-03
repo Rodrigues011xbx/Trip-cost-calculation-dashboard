@@ -17,12 +17,37 @@
   --amber: #d97706; --amber-light: #fef3c7;
   --cyan: #06b6d4; --cyan-light: #ecfeff;
   --red: #ef4444; --red-light: #fef2f2;
+  --chart-grid: #e2e8f0;
+  --chart-border: #ffffff;
   --sidebar-w: 240px;
   --sidebar-collapsed: 64px;
   --radius: 14px; --radius-sm: 10px;
   --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.06);
   --shadow-md: 0 4px 24px rgba(0,0,0,.10);
   --transition: .25s cubic-bezier(.4,0,.2,1);
+}
+
+html.dark {
+  color-scheme: dark;
+  --bg: #111827;
+  --surface: #1f2937;
+  --surface2: #273449;
+  --border: #374151;
+  --text: #f3f4f6;
+  --text2: #c5cedb;
+  --text3: #94a3b8;
+  --accent-light: #312e81;
+  --blue-light: #172554;
+  --purple-light: #2e1065;
+  --green-light: #052e2b;
+  --orange-light: #451a03;
+  --amber-light: #451a03;
+  --cyan-light: #083344;
+  --red-light: #450a0a;
+  --chart-grid: #374151;
+  --chart-border: #1f2937;
+  --shadow: 0 1px 3px rgba(0,0,0,.2), 0 4px 16px rgba(0,0,0,.18);
+  --shadow-md: 0 4px 24px rgba(0,0,0,.3);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -112,6 +137,13 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
   padding: 6px 12px; background: var(--accent-light);
   color: var(--accent); border-radius: 20px; font-size: 12px; font-weight: 600;
 }
+.theme-toggle {
+  width: 36px; height: 36px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--surface2); color: var(--text2);
+  cursor: pointer; font-size: 14px; display: flex; align-items: center;
+  justify-content: center; transition: var(--transition);
+}
+.theme-toggle:hover { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
 
 /* ===== TABS ===== */
 .tab-content { display: none; padding: 24px 28px; flex-direction: column; gap: 20px; }
@@ -195,7 +227,7 @@ input[type="text"], input[type="number"], input[type="date"], textarea, select {
   outline: none; transition: var(--transition); width: 100%;
 }
 input:focus, textarea:focus, select:focus {
-  border-color: var(--accent); background: #fff;
+  border-color: var(--accent); background: var(--surface);
   box-shadow: 0 0 0 3px rgba(79,70,229,.12);
 }
 input::placeholder, textarea::placeholder { color: var(--text3); }
@@ -206,14 +238,14 @@ select { appearance: none; cursor: pointer; }
 .select-wrapper.small select { padding: 8px 28px 8px 11px; font-size: 12.5px; }
 
 /* ===== CALC PREVIEW ===== */
-.calc-preview { background: linear-gradient(135deg,#f0f4ff,#f5f3ff); border: 1.5px solid #c7d2fe; border-radius: var(--radius-sm); margin-bottom: 16px; overflow: hidden; }
-.calc-preview-header { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(79,70,229,.08); border-bottom: 1px solid #c7d2fe; font-size: 13px; font-weight: 600; color: var(--accent); }
+.calc-preview { background: linear-gradient(135deg,var(--blue-light),var(--purple-light)); border: 1.5px solid var(--accent); border-radius: var(--radius-sm); margin-bottom: 16px; overflow: hidden; }
+.calc-preview-header { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(79,70,229,.12); border-bottom: 1px solid var(--accent); font-size: 13px; font-weight: 600; color: var(--accent); }
 .calc-preview-body { padding: 12px 14px; }
 .calc-row { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; color: var(--text2); }
 .calc-row strong { color: var(--text); font-weight: 600; }
 .calc-row.total { font-weight: 700; font-size: 15px; color: var(--green); }
 .calc-row.total strong { color: var(--green); font-size: 17px; }
-.calc-divider { border-top: 1.5px dashed #c7d2fe; margin: 8px 0; }
+.calc-divider { border-top: 1.5px dashed var(--accent); margin: 8px 0; }
 
 /* ===== BUTTONS ===== */
 .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
