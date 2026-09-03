@@ -14,6 +14,58 @@ let state = {
 function loadState() { try { const r = localStorage.getItem(STATE_KEY); if (r) state = JSON.parse(r); } catch(_){} }
 function saveState() { localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
 
+function exportData() {
+  const backup = {
+    app: 'igreja-maceio-custo-viagem',
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    data: state,
+  };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `backup-custo-viagem-${new Date().toISOString().slice(0,10)}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+  toast('Backup exportado com sucesso.','info');
+}
+
+function importData(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const backup = JSON.parse(reader.result);
+      const imported = backup.data;
+      const valid = backup.app === 'igreja-maceio-custo-viagem'
+        && backup.version === 1
+        && imported && typeof imported === 'object'
+        && imported.config && Array.isArray(imported.condutores)
+        && Array.isArray(imported.viagens);
+      if (!valid) throw new Error('Formato inválido');
+      openModal('Importar este backup substituirá os dados atuais neste dispositivo?', () => {
+        state = imported;
+        saveState();
+        loadConfigInputs(); updateConfigPreview(); refreshCondutorSelects();
+        renderCondutoresList(); renderViagensList(); renderDashboard(); refreshAnosFiltro();
+        toast('Backup importado com sucesso.');
+      });
+    } catch (_) {
+      toast('Arquivo de backup inválido.','error');
+    }
+  };
+  reader.onerror = () => toast('Não foi possível ler o arquivo.','error');
+  reader.readAsText(file);
+}
+
+document.getElementById('btn-exportar-dados').addEventListener('click', exportData);
+document.getElementById('btn-importar-dados').addEventListener('click', () => document.getElementById('input-importar-dados').click());
+document.getElementById('input-importar-dados').addEventListener('change', event => {
+  importData(event.target.files[0]);
+  event.target.value = '';
+});
+
 function applyTheme(theme) {
   const isDark = theme === 'dark';
   document.documentElement.classList.toggle('dark', isDark);
